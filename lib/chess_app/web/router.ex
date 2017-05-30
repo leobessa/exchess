@@ -5,7 +5,8 @@ defmodule ChessApp.Web.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", ChessApp.Web do
+  scope "/api", ChessApp.Web, as: :api do
     pipe_through :api
+    post "/accounts", CredentialController, :create, as: :signup
   end
 end
