@@ -23,6 +23,14 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+config :guardian, Guardian,
+  issuer: "ChessApp.#{Mix.env}",
+  allowed_algos: ["HS256", "HS512"],
+  ttl: { 30, :days },
+  verify_issuer: true,
+  secret_key: "secret",
+  serializer: ChessApp.Account.Serializer
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"

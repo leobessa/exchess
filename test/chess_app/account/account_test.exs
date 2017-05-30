@@ -40,4 +40,17 @@ defmodule ChessApp.AccountTest do
       assert {:error, %Ecto.Changeset{}} = Account.create_credential(%{password: nil, username: "jon"})
     end
   end
+
+  describe "auth_tokens" do
+    test "create_auth_token/1 with valid data creates a credential" do
+      attrs = %{password: "secret123", username: "jon"}
+      {:ok, _credential} = Account.create_credential(attrs)
+      {:ok, auth_token}  = Account.create_auth_token("jon","secret123")
+      assert auth_token
+    end
+
+    test "create_credential/1 with invalid data returns :invalid_credential error" do
+      assert {:error, :invalid_credential} = Account.create_auth_token("jon", nil)
+    end
+  end
 end
