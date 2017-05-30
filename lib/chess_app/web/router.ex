@@ -19,7 +19,7 @@ defmodule ChessApp.Web.Router do
   scope "/api", ChessApp.Web, as: :api do
     pipe_through [:api,:api_auth]
     post "/matches", MatchController, :create, as: :chess_match
-    get "/matches", MatchController, :index, as: :chess_match
+    get "/matches", MatchController, :index, as: :matches
     post "/auth_tokens", AuthTokenController, :create, as: :auth_token
   end
 end

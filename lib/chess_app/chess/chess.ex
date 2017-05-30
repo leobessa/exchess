@@ -28,6 +28,12 @@ defmodule ChessApp.Chess do
     Repo.all(Match)
   end
 
+  def match_index_page(params) do
+    Match
+    |> order_by(desc: :inserted_at)
+    |> Repo.paginate(params)
+  end
+
   @doc false
   def get_match(id), do: Repo.get(Match, id)
 

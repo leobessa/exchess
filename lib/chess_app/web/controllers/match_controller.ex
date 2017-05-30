@@ -16,11 +16,12 @@ defmodule ChessApp.Web.MatchController do
     end
   end
 
-  def index(conn, _params) do
-    matches = Chess.list_matches()
+  def index(conn, params) do
+    page = Chess.match_index_page(params)
     conn
     |> put_status(:ok)
-    |> render("index.json", matches: matches)
+    |> Scrivener.Headers.paginate(page)
+    |> render("index.json", matches: page.entries)
   end
 
   def unauthenticated(conn, _params) do

@@ -35,7 +35,10 @@ defmodule ChessApp.Mixfile do
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
      {:comeonin, "~> 3.0"},
-     {:guardian, "~> 0.14.2"}]
+     {:guardian, "~> 0.14.2"},
+     {:scrivener_ecto, "~> 1.0"},
+     {:scrivener_headers, "~> 3.1"},
+     {:ex_machina, "~> 2.0", only: :test}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
