@@ -25,47 +25,35 @@ defmodule ChessApp.Web.MatchControllerTest do
   end
 
   describe "index all matches" do
+    setup [:jwt_authorization]
     test "on empty database", %{conn: conn} do
-      build(:credential, %{username: "jon"}) |> with_password("secret") |> insert
-      {:ok, auth_token} = ChessApp.Account.create_auth_token("jon", "secret")
       conn = conn
-        |> put_req_header("authorization", "Bearer #{auth_token.jwt}")
         |> get(api_matches_path(conn, :index))
 
       assert [] = json_response(conn, 200)["data"]
     end
 
     test "returns single match", %{conn: conn} do
-      build(:credential, %{username: "jon"}) |> with_password("secret") |> insert
-      {:ok, auth_token} = ChessApp.Account.create_auth_token("jon", "secret")
       match = insert(:match)
       conn = conn
-        |> put_req_header("authorization", "Bearer #{auth_token.jwt}")
         |> get(api_matches_path(conn, :index))
       assert json_response(conn, 200) == render_json("index.json", %{matches: [match]})
     end
 
     test "returns multiple matches with pagination", %{conn: conn} do
-      build(:credential, %{username: "jon"}) |> with_password("secret") |> insert
-      {:ok, auth_token} = ChessApp.Account.create_auth_token("jon", "secret")
       insert_list(20, :match)
       default_page_response = conn
-        |> put_req_header("authorization", "Bearer #{auth_token.jwt}")
         |> get(api_matches_path(conn, :index))
         |> json_response(200)
       assert 10 == length(default_page_response["data"])
     end
 
     test "returns multiple matches with page parameter", %{conn: conn} do
-      build(:credential, %{username: "jon"}) |> with_password("secret") |> insert
-      {:ok, auth_token} = ChessApp.Account.create_auth_token("jon", "secret")
       insert_list(20, :match)
       page1_response = conn
-        |> put_req_header("authorization", "Bearer #{auth_token.jwt}")
         |> get(api_matches_path(conn, :index), page: 1)
         |> json_response(200)
       page2_response = conn
-        |> put_req_header("authorization", "Bearer #{auth_token.jwt}")
         |> get(api_matches_path(conn, :index), page: 2)
         |> json_response(200)
       assert 10 == length(page1_response["data"])
@@ -74,6 +62,14 @@ defmodule ChessApp.Web.MatchControllerTest do
       page2_ids = for entry <- page2_response["data"], do: entry["id"], into: MapSet.new
       assert MapSet.new == MapSet.intersection(page1_ids,page2_ids)
     end
+  end
+
+  def jwt_authorization(context) do
+    %{username: username} = build(:credential) |> with_password("secret") |> insert
+    {:ok, auth_token} = ChessApp.Account.create_auth_token(username, "secret")
+    conn = context.conn
+      |> put_req_header("authorization", "Bearer #{auth_token.jwt}")
+    [conn: conn]
   end
 
   defp render_json(template, assigns) do
