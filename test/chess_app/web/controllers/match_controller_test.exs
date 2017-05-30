@@ -24,4 +24,13 @@ defmodule ChessApp.Web.MatchControllerTest do
     assert Chess.list_matches() == []
   end
 
+  test "index all matches", %{conn: conn} do
+    ChessApp.Account.create_credential(%{username: "jon", password: "secret"})
+    {:ok, auth_token} = ChessApp.Account.create_auth_token("jon", "secret")
+    conn = conn
+      |> put_req_header("authorization", "Bearer #{auth_token.jwt}")
+      |> get(api_chess_match_path(conn, :index))
+    assert [] = json_response(conn, 200)["data"]
+  end
+
 end

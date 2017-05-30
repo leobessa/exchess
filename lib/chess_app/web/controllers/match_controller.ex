@@ -16,6 +16,13 @@ defmodule ChessApp.Web.MatchController do
     end
   end
 
+  def index(conn, _params) do
+    matches = Chess.list_matches()
+    conn
+    |> put_status(:ok)
+    |> render("index.json", matches: matches)
+  end
+
   def unauthenticated(conn, _params) do
     conn
     |> put_status(:forbidden)
