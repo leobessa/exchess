@@ -8,10 +8,17 @@ defmodule ChessApp.Web.AuthTokenControllerTest do
   end
 
   test "creates auth_token and renders jwt when data is valid", %{conn: conn} do
-    Account.create_credential(%{"username" => "jon", "password" => "secret"})
+    {:ok, credential} = Account.create_credential(%{"username" => "jon", "password" => "secret"})
     conn = post conn, api_auth_token_path(conn, :create), account: %{"username" => "jon", "password" => "secret"}
     assert %{"jwt" => jwt} = json_response(conn, 201)["data"]
     assert jwt
+
+    {:ok, claims} = Guardian.decode_and_verify(jwt)
+    assert claims["typ"] == "access"
+    assert claims["aud"] == "Account:#{credential.id}"
+    assert claims["iat"]
+    assert claims["exp"] > claims["iat"]
+    assert claims["iss"] == Guardian.issuer
   end
 
   test "does not create auth_token and renders errors when data is invalid", %{conn: conn} do
