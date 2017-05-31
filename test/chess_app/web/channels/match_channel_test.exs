@@ -55,6 +55,19 @@ defmodule ChessApp.Web.MatchChannelTest do
     }
   end
 
+  test "player1 request move on initial state" do
+    %{username: username} = build(:credential) |> with_password("secret") |> insert
+    {:ok, auth_token} = ChessApp.Account.create_auth_token(username, "secret")
+    {:ok, socket} = connect(UserSocket, %{"jwt" => auth_token.jwt})
+    player1_id = auth_token.account_id
+    match = insert(:match, %{player1_id: player1_id})
+    {:ok,_reply, socket} = socket
+      |> subscribe_and_join(MatchChannel, "match:#{match.id}")
+    assert_push "game_state_sync", %{state: @starting_game_state,player1_id: ^player1_id, player2_id: nil}
+    ref = push socket, "move", %{"san" => "e4e5"}
+    assert_reply ref, :ok, %{"san" => "e4e5"}
+  end
+
   # test "ping replies with status ok", %{socket: socket} do
   #   ref = push socket, "ping", %{"hello" => "there"}
   #   assert_reply ref, :ok, %{"hello" => "there"}
