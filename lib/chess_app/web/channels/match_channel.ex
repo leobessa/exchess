@@ -1,9 +1,11 @@
 defmodule ChessApp.Web.MatchChannel do
   use ChessApp.Web, :channel
+  import Guardian.Phoenix.Socket
 
   def join("match:" <> match_id, payload, socket) do
     if authorized?(payload) do
-      match = ChessApp.Chess.get_match(match_id)
+      credential = current_resource(socket)
+      {:ok, match} = ChessApp.Chess.join_match(match_id, credential)
       socket = assign(socket, :match, match)
       send(self(), :after_join)
       {:ok, socket}
@@ -14,7 +16,11 @@ defmodule ChessApp.Web.MatchChannel do
 
   def handle_info(:after_join, socket) do
     match = socket.assigns[:match]
-    push socket, "game_state_sync", %{state: match.game_state}
+    push socket, "game_state_sync", %{
+      state: match.game_state,
+      player1_id: match.player1_id,
+      player2_id: match.player2_id
+    }
    {:noreply, socket}
   end
 

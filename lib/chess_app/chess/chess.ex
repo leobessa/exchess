@@ -74,4 +74,20 @@ defmodule ChessApp.Chess do
   """
   def get_match!(id), do: Repo.get!(Match, id)
 
+  @doc false
+  def join_match(id, %Credential{id: account_id}) when is_binary(account_id) do
+    Repo.transaction fn ->
+      match = Repo.get(Match, id)
+      case match do
+        %{player1_id: ^account_id} -> match
+        %{player2_id: ^account_id} -> match
+        %{player2_id: nil} ->
+          match
+          |> Match.set_player2_id_changeset(account_id)
+          |> Repo.update!
+        _ -> match
+      end
+    end
+  end
+
 end

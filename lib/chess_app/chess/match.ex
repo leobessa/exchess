@@ -22,4 +22,10 @@ defmodule ChessApp.Chess.Match do
     |> validate_required([:player1_id])
   end
 
+  def set_player2_id_changeset(model, player2_id) do
+    model
+    |> change()
+    |> put_change(:player2_id, player2_id)
+  end
+
 end
