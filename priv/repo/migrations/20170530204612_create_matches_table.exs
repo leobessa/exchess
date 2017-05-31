@@ -6,7 +6,7 @@ defmodule ChessApp.Repo.Migrations.CreateMatchesTable do
       add :id, :binary_id, primary_key: true
       add :player1_id, references(:account_credentials, type: :binary_id)
       add :player2_id, references(:account_credentials, type: :binary_id)
-      add :game_state, :map
+      add :game_state, :string
       add :finished, :boolean, default: false
 
       timestamps()

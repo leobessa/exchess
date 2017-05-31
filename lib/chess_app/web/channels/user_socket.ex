@@ -1,8 +1,10 @@
 defmodule ChessApp.Web.UserSocket do
   use Phoenix.Socket
+  import Guardian.Phoenix.Socket
 
   ## Channels
   # channel "room:*", ChessApp.Web.RoomChannel
+  channel "match:*", ChessApp.Web.MatchChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
@@ -19,8 +21,11 @@ defmodule ChessApp.Web.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket) do
-    {:ok, socket}
+  def connect(%{"jwt" => jwt}, socket) do
+    case sign_in(socket, jwt) do
+      {:ok, authed_socket, _guardian_params} -> {:ok, authed_socket}
+      _ -> :error
+    end
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
