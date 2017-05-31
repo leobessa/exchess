@@ -17,7 +17,31 @@ defmodule ChessApp.Web.MatchController do
   end
 
   def index(conn, params) do
-    page = Chess.match_index_page(params)
+    page = Chess.all_matches_index_page(params)
+    conn
+    |> put_status(:ok)
+    |> Scrivener.Headers.paginate(page)
+    |> render("index.json", matches: page.entries)
+  end
+
+  def playing_matches_index(conn, params) do
+    page = Chess.playing_matches_index_page(params)
+    conn
+    |> put_status(:ok)
+    |> Scrivener.Headers.paginate(page)
+    |> render("index.json", matches: page.entries)
+  end
+
+  def waiting_for_opponent_matches_index(conn, params) do
+    page = Chess.waiting_for_opponent_matches_index_page(params)
+    conn
+    |> put_status(:ok)
+    |> Scrivener.Headers.paginate(page)
+    |> render("index.json", matches: page.entries)
+  end
+
+  def finished_matches_index(conn, params) do
+    page = Chess.finished_matches_index_page(params)
     conn
     |> put_status(:ok)
     |> Scrivener.Headers.paginate(page)

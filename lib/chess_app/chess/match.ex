@@ -9,6 +9,7 @@ defmodule ChessApp.Chess.Match do
     belongs_to :player1, Credential
     belongs_to :player2, Credential
     field :game_state, :map
+    field :finished, :boolean, default: false
 
     timestamps()
   end

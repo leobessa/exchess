@@ -28,8 +28,29 @@ defmodule ChessApp.Chess do
     Repo.all(Match)
   end
 
-  def match_index_page(params) do
+  def all_matches_index_page(params) do
     Match
+    |> order_by(desc: :inserted_at)
+    |> Repo.paginate(params)
+  end
+
+  def playing_matches_index_page(params) do
+    Match
+    |> where([m], m.finished == false and not is_nil(m.player2_id))
+    |> order_by(desc: :inserted_at)
+    |> Repo.paginate(params)
+  end
+
+  def waiting_for_opponent_matches_index_page(params) do
+    Match
+    |> where([m], is_nil(m.player2_id))
+    |> order_by(desc: :inserted_at)
+    |> Repo.paginate(params)
+  end
+
+  def finished_matches_index_page(params) do
+    Match
+    |> where([finished: true])
     |> order_by(desc: :inserted_at)
     |> Repo.paginate(params)
   end

@@ -20,6 +20,9 @@ defmodule ChessApp.Web.Router do
     pipe_through [:api,:api_auth]
     post "/matches", MatchController, :create, as: :chess_match
     get "/matches", MatchController, :index, as: :matches
+    get "/matches/playing", MatchController, :playing_matches_index, as: :playing_matches
+    get "/matches/waiting", MatchController, :waiting_for_opponent_matches_index, as: :waiting_for_opponent_matches
+    get "/matches/finished", MatchController, :finished_matches_index, as: :finished_matches
     post "/auth_tokens", AuthTokenController, :create, as: :auth_token
   end
 end

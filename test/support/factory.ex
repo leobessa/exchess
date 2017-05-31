@@ -17,4 +17,28 @@ defmodule ChessApp.Factory do
   def match_factory do
     %ChessApp.Chess.Match{}
   end
+
+  def playing_match_factory do
+    %ChessApp.Chess.Match{
+      player1: build(:credential),
+      player2: build(:credential),
+      finished: false
+    }
+  end
+
+  def finished_match_factory do
+    %ChessApp.Chess.Match{
+      player1: build(:credential),
+      player2: build(:credential),
+      finished: true
+    }
+  end
+
+  def waiting_for_opponent_match_factory do
+    %ChessApp.Chess.Match{
+      player1: build(:credential),
+      player2: nil,
+      finished: false
+    }
+  end
 end
