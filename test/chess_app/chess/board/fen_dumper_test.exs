@@ -1,5 +1,5 @@
 defmodule ChessApp.Chess.Board.FenExporterTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias ChessApp.Chess.Board
   alias ChessApp.Chess.Board.FenExporter
 

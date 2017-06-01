@@ -17,14 +17,10 @@ defmodule ChessApp.Chess.Board.FenLoader do
   defp active("w"), do: :white
   defp active("b"), do: :black
 
-  def enpassant("-"), do: :none
-  def enpassant(enpassant) when is_binary(enpassant), do: name_to_square(enpassant)
-
-  def name_to_square(named_position) do
-    [file,rank] = String.split(named_position,"",trim: true)
-    file_idx = String.to_integer(file, 18) - 10
-    rank_idx = String.to_integer(rank, 10) - 1
-    (rank_idx) * 8 + (file_idx) + 1
+  defp enpassant("-"), do: :none
+  defp enpassant(enpassant) when is_binary(enpassant) do
+    {:ok, square} = Board.name_to_square(enpassant)
+    square
   end
 
   defp castling(castling) do
