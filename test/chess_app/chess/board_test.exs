@@ -73,4 +73,90 @@ defmodule ChessApp.Chess.BoardTest do
     end
   end
 
+  describe "make_move" do
+    test "d7g7 on 'r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R w KQkq - 5 12'" do
+      {:ok, board} = Board.load("r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R w KQkq - 5 12")
+      {:ok, result} = Board.make_move(board, "d7g7")
+      assert result.halfmove_clock == 0
+    end
+    test "e2e4 on 'r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R w KQkq - 5 12'" do
+      {:ok, board} = Board.load("r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R w KQkq - 5 12")
+      assert {:error, :invalid_move, _} = Board.make_move(board, "e2e4")
+    end
+    test "a8b8 on 'r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R w KQkq - 5 12'" do
+      {:ok, board} = Board.load("r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R w KQkq - 5 12")
+      assert {:error, :invalid_move, _} = Board.make_move(board, "a8b8")
+    end
+  end
+  describe "castling on make_move" do
+    test "white castling on queen side" do
+      {:ok, board} = Board.load("r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R w KQkq - 0 12")
+      {:ok, result} = Board.make_move(board, "e1c1")
+      assert Board.dump!(result) == "r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/2KR3R b kq - 1 12"
+    end
+    test "white castling on king side" do
+      {:ok, board} = Board.load("r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R w KQkq - 0 12")
+      {:ok, result} = Board.make_move(board, "e1g1")
+      assert Board.dump!(result) == "r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R4RK1 b kq - 1 12"
+    end
+    test "black castling on queen side" do
+      {:ok, board} = Board.load("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 12")
+      {:ok, result} = Board.make_move(board, "e8c8")
+      assert Board.dump!(result) == "2kr3r/8/8/8/8/8/8/R3K2R w KQ - 1 13"
+    end
+    test "black castling on king side" do
+      {:ok, board} = Board.load("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 12")
+      {:ok, result} = Board.make_move(board, "e8g8")
+      assert Board.dump!(result) == "r4rk1/8/8/8/8/8/8/R3K2R w KQ - 1 13"
+    end
+    test "castling rights are lost after white king moved" do
+      {:ok, board} = Board.load("r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R w KQkq - 0 12")
+      {:ok, result} = Board.make_move(board, "e1d1")
+      assert result.castling == %ChessApp.Chess.Board.CastlingRights{
+        white_kingside: false, white_queenside: false,
+        black_kingside: true, black_queenside: true
+      }
+    end
+    test "castling rights are lost after black king moved" do
+      {:ok, board} = Board.load("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 12")
+      {:ok, result} = Board.make_move(board, "e8d8")
+      assert result.castling == %ChessApp.Chess.Board.CastlingRights{
+        white_kingside: true, white_queenside: true,
+        black_kingside: false, black_queenside: false
+      }
+    end
+  end
+  describe "en_passant on make_move" do
+    test "captures piece" do
+      {:ok, board} = Board.load("rnbqkbnr/p1pppppp/8/8/1pPP4/5N2/PP2PPPP/RNBQKB1R b KQkq c3 0 3")
+      {:ok, result} = Board.make_move(board, "b4c3")
+      assert Board.dump!(result) == "rnbqkbnr/p1pppppp/8/8/3P4/2p2N2/PP2PPPP/RNBQKB1R w KQkq - 0 4"
+    end
+  end
+
+  describe "make_move updates en_passant" do
+    test "black pawn moving 2 ranks" do
+      {:ok, board} = Board.load("rnbqkb1r/pppppppp/5n2/3P4/8/8/PPP1PPPP/RNBQKBNR b KQkq - 0 2")
+      {:ok, result} = Board.make_move(board, "c7c5")
+      assert Board.dump!(result) == "rnbqkb1r/pp1ppppp/5n2/2pP4/8/8/PPP1PPPP/RNBQKBNR w KQkq c6 0 3"
+    end
+  end
+
+  describe "make_move with promotion" do
+    test "promotion to queen" do
+      {:ok, board} = Board.load("r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R w KQkq - 0 12")
+      {:ok, result} = Board.make_move(board, "c7c8q")
+      assert Board.dump!(result) == "r1Q2knr/3Q2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R b KQkq - 0 12"
+    end
+  end
+
+  describe "parse_piece" do
+    test "parse 'q'" do
+      {:black, :queen} = Board.parse_piece!("q")
+    end
+    test "parse 'Q'" do
+      {:white, :queen} = Board.parse_piece!("Q")
+    end
+  end
+
 end

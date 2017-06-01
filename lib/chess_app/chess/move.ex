@@ -3,7 +3,7 @@ defmodule ChessApp.Chess.Move do
 
   alias ChessApp.Chess.Board
   alias ChessApp.Chess.Move
-  import ChessApp.Chess.Board
+  import ChessApp.Chess.Board.Macros
 
   def from_algebraic_notation(an,board = %Board{}) do
     codes = String.downcase(an)
@@ -22,11 +22,11 @@ defmodule ChessApp.Chess.Move do
     parse_codes([from_file, from_rank, to_file, to_rank, promote])
   end
   defp parse_codes([from_file, from_rank, to_file, to_rank]) when is_file(from_file) and is_rank(from_rank) and is_file(to_file) and is_rank(to_rank) do
-    {:ok, {name_to_square!(from_file,from_rank), name_to_square!(to_file, to_rank), nil}}
+    {:ok, {Board.name_to_square!(from_file,from_rank), Board.name_to_square!(to_file, to_rank), nil}}
   end
   defp parse_codes([from_file, from_rank, to_file, to_rank, promote]) when is_file(from_file) and is_rank(from_rank) and is_file(to_file) and is_rank(to_rank) do
     {:ok, {_color, promote_piece}} = Board.parse_piece(promote)
-    {:ok, {name_to_square!(from_file,from_rank), name_to_square!(to_file, to_rank), promote_piece}}
+    {:ok, {Board.name_to_square!(from_file,from_rank), Board.name_to_square!(to_file, to_rank), promote_piece}}
   end
   defp parse_codes(_other) do
     {:error, :invalid_format}

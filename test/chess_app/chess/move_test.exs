@@ -50,6 +50,13 @@ defmodule ChessApp.Chess.MoveTest do
     test "with '0000' returns invalid_format error", %{board: board} do
       assert {:error, :invalid_format} = Move.from_algebraic_notation("0000",board)
     end
+    test "enpassant" do
+      {:ok, board} = Board.load("rnbqkbnr/p1pppppp/8/8/1pPP4/5N2/PP2PPPP/RNBQKB1R b KQkq c3 0 3")
+      {:ok, en_passant_move} = Move.from_algebraic_notation("b4c3",board)
+      assert %Move{
+        side: :black, special: :enpassant, capture: true, chesspiece: :pawn
+      } = en_passant_move
+    end
   end
 
 end

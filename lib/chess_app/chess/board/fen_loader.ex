@@ -24,7 +24,7 @@ defmodule ChessApp.Chess.Board.FenLoader do
   end
 
   defp castling(castling) do
-    %{
+    %ChessApp.Chess.Board.CastlingRights{
       white_kingside: String.contains?(castling, "K"),
       white_queenside: String.contains?(castling,"Q"),
       black_kingside: String.contains?(castling, "k"),
