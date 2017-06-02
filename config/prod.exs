@@ -17,7 +17,8 @@ config :chess_app, ChessApp.Web.Endpoint,
   on_init: {ChessApp.Web.Endpoint, :load_from_system_env, []},
   cache_static_manifest: "priv/static/manifest.json",
   url: [scheme: "https", host: "exchess.herokuapp.com", port: 443],
-  force_ssl: [rewrite_on: [:x_forwarded_proto]]
+  force_ssl: [rewrite_on: [:x_forwarded_proto]],
+  secret_key_base: System.get_env("SECRET_KEY_BASE")
 
 config :chess_app, ChessApp.Repo,
   adapter: Ecto.Adapters.Postgres,
