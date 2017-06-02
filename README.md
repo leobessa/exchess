@@ -88,6 +88,11 @@ channel.on("game_state_updated", msg => {
 })
 ```
 
+## Chess Business Logic
+
+The chess logic was based on https://github.com/twilio/chessms.
+
+
 ## Phoenix
 
 To start your Phoenix server:
