@@ -1,8 +1,7 @@
 # ChessApp
 
-Try it online: https://exchess.herokuapp.com
-
 ChessApp is a Phoenix chess server that uses Phoenix channels.
+Try it online: https://exchess.herokuapp.com
 
 ## REST JSON API
 
@@ -61,6 +60,32 @@ response_body   = {"data":
     finished: false
   }]
 }
+```
+
+## Channel API
+
+```javascript
+let socket = new Socket("/socket", {
+  params: {jwt: jwt},
+  logger: ((kind, msg, data) => { console.log(`${kind}: ${msg}`, data) })
+})
+
+let channel = socket.channel("match:" + matchId, {})
+channel.join()
+  .receive("ok", resp => { console.log("Joined successfully", resp) })
+  .receive("error", resp => { console.log("Unable to join", resp) })
+
+channel.push("move", {an: "e2e4"})
+  .receive("ok", resp => { console.log("Move successfully", resp) })
+  .receive("error", resp => { console.log("Unable to move", resp) })
+
+channel.on("game_state_sync", msg => {
+  board.position(msg.fen) // update client board
+})
+
+channel.on("game_state_updated", msg => {
+  board.position(msg.fen) // update client board
+})
 ```
 
 ## Phoenix
