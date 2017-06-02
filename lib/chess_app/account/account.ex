@@ -10,12 +10,11 @@ defmodule ChessApp.Account do
   alias ChessApp.Account.AuthToken
 
   def authenticate(username, password) do
-    with (%Credential{} = credential) <- get_credential_by_username(username) do
-      if Credential.password_match?(credential,password) do
+    with (%Credential{} = credential) <- get_credential_by_username(username),
+      true <- Credential.password_match?(credential,password) do
         {:ok, credential}
-      else
-        {:error, :invalid_credential}
-      end
+    else
+      _ -> {:error, :invalid_credential}
     end
   end
 

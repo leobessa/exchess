@@ -80,7 +80,7 @@ defmodule ChessApp.Web.MatchChannelTest do
       |> subscribe_and_join(MatchChannel, "match:#{match.id}")
     assert_push "game_state_sync", %{fen: @starting_fen, player1_id: ^player1_id, player2_id: ^player2_id}
     ref = push socket, "move", %{"an" => "e2e4"}
-    assert_reply ref, :ok, %{"errors" => ["not_black_turn"]}
+    assert_reply ref, :error, %{"errors" => ["not_black_turn"]}
   end
 
   test "player1 request move on player2's turn" do
@@ -89,14 +89,14 @@ defmodule ChessApp.Web.MatchChannelTest do
     ref = push white, "move", %{"an" => "f2f3"}
     assert_reply ref, :ok, %{"an" => "f2f3"}
     ref = push white, "move", %{"an" => "f2f3"}
-    assert_reply ref, :ok, %{"errors" => ["not_white_turn"]}
+    assert_reply ref, :error, %{"errors" => ["not_white_turn"]}
   end
 
   test "viewer request move" do
     match = insert(:playing_match)
     white  = subscribe_and_join_match_channel(match, :viewer)
     ref = push white, "move", %{"an" => "f2f3"}
-    assert_reply ref, :ok, %{"errors" => ["viewer_is_forbidden"]}
+    assert_reply ref, :error, %{"errors" => ["viewer_is_forbidden"]}
   end
 
   test "fool's mate sample" do

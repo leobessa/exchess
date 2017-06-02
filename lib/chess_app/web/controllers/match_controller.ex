@@ -20,6 +20,7 @@ defmodule ChessApp.Web.MatchController do
     credential = Guardian.Plug.current_resource(conn)
     {:ok, auth_token} = ChessApp.Account.create_auth_token(credential)
     match = Chess.get_match!(id)
+    |> ChessApp.Repo.preload([:player1,:player2])
     conn
     |> assign(:match, match)
     |> assign(:jwt, auth_token.jwt)

@@ -7,4 +7,5 @@ defmodule ChessApp.Web.HomeView do
   def username(%{username: username}) do
     username
   end
+
 end

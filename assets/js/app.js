@@ -1754,8 +1754,9 @@ $(document).ready(function(){
       if (e.keyCode == 13) {
         channel.push("move", {an: $input.val()})
           .receive("ok", resp => { console.log("Move successfully", resp) })
-          .receive("error", resp => { console.log("Unable to move", resp) })
+          .receive("error", resp => { alert(resp["description"] || resp["errors"]) })
         $input.val("")
+        console.log(channel);
       }
     })
 

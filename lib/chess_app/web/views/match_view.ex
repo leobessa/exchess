@@ -15,4 +15,11 @@ defmodule ChessApp.Web.MatchView do
     |> Map.take(~w(id player1_id player2_id finished)a)
   end
 
+  def username(nil) do
+    "(pending)"
+  end
+  def username(%{username: username}) do
+    username
+  end
+
 end

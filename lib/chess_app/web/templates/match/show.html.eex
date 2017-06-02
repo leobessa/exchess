@@ -3,6 +3,7 @@
 <%= link("Home", to: home_path(@conn, :index), class: "btn btn-xs") %>
 
 <h2>Chess Match #<%= @match.id %></h2>
+<h3><%= username(@match.player1) %> VS <%= username(@match.player2) %></h3>
 
 <article id="match" data-id="<%= @match.id %>">
   <div id="board" style="width: 400px"></div>

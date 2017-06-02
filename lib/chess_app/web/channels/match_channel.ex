@@ -51,10 +51,12 @@ defmodule ChessApp.Web.MatchChannel do
         Logger.debug("match_updated #{inspect(match)}")
         {:ok, %{"an" => move}}
     else
-      {:error, :invalid_move, description} ->
-        {:ok, %{"errors" => ["invalid_move"], "description" => description}}
-      {:error, %{"errors" => errors}} ->
-        {:ok, %{"errors" => errors}}
+      {:error, :invalid_format} ->
+        {:error, %{"errors" => ["invalid_format"], "description" => "Move format is invalid. Algebraic Notation is expected."}}
+      {:error, :invalid_move, description} when is_binary(description) ->
+        {:error, %{"errors" => ["invalid_move"], "description" => description}}
+      {:error, %{"errors" => errors}} when is_list(errors) ->
+        {:error, %{"errors" => errors}}
     end
     {:reply, reply, socket}
   end
