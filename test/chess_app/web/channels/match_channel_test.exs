@@ -117,6 +117,18 @@ defmodule ChessApp.Web.MatchChannelTest do
     assert_push "game_state_updated", %{finished: _finished, fen: "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3"}
   end
 
+  test "request status as player1" do
+    match = insert(:playing_match)
+    white = subscribe_and_join_match_channel(match, :player1)
+    ref   = push white, "status"
+
+    assert_reply ref, :ok, %{ finished: finished, fen: fen, player1_id: player1_id, player2_id: player2_id}
+    assert finished   == match.finished
+    assert fen        == match.game_state
+    assert player1_id == match.player1_id
+    assert player2_id == match.player2_id
+  end
+
   defp subscribe_and_join_match_channel(match, :player1) do
     credential = ChessApp.Account.get_credential!(match.player1_id)
     subscribe_and_join_match_channel(match, credential)

@@ -74,13 +74,8 @@ defmodule ChessApp.Chess.BoardTest do
   end
 
   describe "make_move" do
-    test "e4e5 on 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'" do
-      {:ok, board} = Board.load("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-      {:ok, result} = Board.make_move(board, "e2e4")
-      assert Board.dump!(result) == "r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/2KR3R b kq - 1 12"
-    end
-    test "d7g7 on 'r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R w KQkq - 5 12'" do
-      {:ok, board} = Board.load("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1")
+    test "d7g7 on 'r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R w KQkq - 0 12'" do
+      {:ok, board} = Board.load("r4knr/2PQ2pp/5p2/1B6/4P3/P4N2/P1P2PPP/R3K2R w KQkq - 0 12")
       {:ok, result} = Board.make_move(board, "d7g7")
       assert result.halfmove_clock == 0
     end

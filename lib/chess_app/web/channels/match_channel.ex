@@ -22,10 +22,22 @@ defmodule ChessApp.Web.MatchChannel do
     push socket, "game_state_sync", %{
       fen: match.game_state,
       player1_id: match.player1_id,
-      player2_id: match.player2_id
+      player2_id: match.player2_id,
+      finished: match.finished
     }
 
    {:noreply, socket}
+  end
+
+  def handle_in("status", _params, socket) do
+    match = socket.assigns[:match]
+    reply = {:ok,%{
+      fen: match.game_state,
+      player1_id: match.player1_id,
+      player2_id: match.player2_id,
+      finished: match.finished
+    }}
+    {:reply, reply, socket}
   end
 
   def handle_in("move", %{"an" => move}, socket) do
@@ -36,17 +48,13 @@ defmodule ChessApp.Web.MatchChannel do
       ^player2_id when not is_nil(player2_id) -> :black
       _ -> :viewer
     end
-    {reply,socket} = with {:ok, board}  <- Board.load(match.game_state),
+    reply = with {:ok, board}  <- Board.load(match.game_state),
       :ok <- authorize_turn_move(board,role),
       {:ok, result} <- Board.make_move(board, move) do
         {:ok, match} = ChessApp.Chess.update_game_state(match, result)
-        Logger.info("match_updated #{inspect(match)}")
-        {{:ok, %{"an" => move}}, assign(socket, :match, match)}
-    else
-      {:error, error} ->
-        {{:error, error},socket}
+        Logger.debug("match_updated #{inspect(match)}")
+        {:ok, %{"an" => move}}
     end
-    socket =
     {:reply, reply, socket}
   end
 

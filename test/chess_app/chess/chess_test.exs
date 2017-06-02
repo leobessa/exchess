@@ -17,11 +17,11 @@ defmodule ChessApp.ChessTest do
       match = insert(:match)
       topic = "match:#{match.id}"
       ChessApp.Web.Endpoint.subscribe(topic)
-      {:ok, _} = Chess.update_game_state(match,next_state)
+      {:ok, match} = Chess.update_game_state(match,next_state)
       assert_receive %Phoenix.Socket.Broadcast{
         topic: ^topic,
         event: "game_state_updated",
-        payload: %{fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"}
+        payload: ^match
       }
     end
   end
