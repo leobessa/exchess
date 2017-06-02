@@ -5,7 +5,7 @@ defmodule ChessApp.Web.MatchChannelTest do
   alias ChessApp.Web.UserSocket
   import ChessApp.Factory
 
-  @starting_game_state "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+  @starting_fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
   test "initial state of the match is sent after player1 join" do
     %{username: username} = build(:credential) |> with_password("secret") |> insert
@@ -16,7 +16,7 @@ defmodule ChessApp.Web.MatchChannelTest do
     socket
       |> subscribe_and_join(MatchChannel, "match:#{match.id}")
     assert_push "game_state_sync", %{
-      fen: @starting_game_state,
+      fen: @starting_fen,
       player1_id: ^player1_id, player2_id: nil
     }
     actual_match = ChessApp.Chess.get_match!(match.id)
@@ -33,7 +33,7 @@ defmodule ChessApp.Web.MatchChannelTest do
     socket
       |> subscribe_and_join(MatchChannel, "match:#{match.id}")
     assert_push "game_state_sync", %{
-      fen: @starting_game_state,
+      fen: @starting_fen,
       player1_id: ^jon_id, player2_id: ^sam_id
     }
 
@@ -50,7 +50,7 @@ defmodule ChessApp.Web.MatchChannelTest do
     socket
       |> subscribe_and_join(MatchChannel, "match:#{match_id}")
     assert_push "game_state_sync", %{
-      fen: @starting_game_state,
+      fen: @starting_fen,
       player1_id: ^player1_id, player2_id: ^player2_id
     }
   end
@@ -63,7 +63,7 @@ defmodule ChessApp.Web.MatchChannelTest do
     match = insert(:match, %{player1_id: player1_id})
     {:ok,_reply, socket} = socket
       |> subscribe_and_join(MatchChannel, "match:#{match.id}")
-    assert_push "game_state_sync", %{fen: @starting_game_state, player1_id: ^player1_id, player2_id: nil}
+    assert_push "game_state_sync", %{fen: @starting_fen, player1_id: ^player1_id, player2_id: nil}
     ref = push socket, "move", %{"an" => "e2e4"}
     assert_reply ref, :ok, %{"an" => "e2e4"}
     expected_match = ChessApp.Chess.get_match!(match.id)
@@ -78,7 +78,7 @@ defmodule ChessApp.Web.MatchChannelTest do
     match = insert(:match, %{player1_id: player1_id})
     {:ok,_reply, socket} = socket
       |> subscribe_and_join(MatchChannel, "match:#{match.id}")
-    assert_push "game_state_sync", %{fen: @starting_game_state, player1_id: ^player1_id, player2_id: ^player2_id}
+    assert_push "game_state_sync", %{fen: @starting_fen, player1_id: ^player1_id, player2_id: ^player2_id}
     ref = push socket, "move", %{"an" => "e2e4"}
     assert_reply ref, :error, %{"errors" => ["not_black_turn"]}
   end
@@ -124,7 +124,7 @@ defmodule ChessApp.Web.MatchChannelTest do
 
     assert_reply ref, :ok, %{ finished: finished, fen: fen, player1_id: player1_id, player2_id: player2_id}
     assert finished   == match.finished
-    assert fen        == match.game_state
+    assert fen        == match.fen
     assert player1_id == match.player1_id
     assert player2_id == match.player2_id
   end

@@ -100,7 +100,7 @@ defmodule ChessApp.Chess.Board do
   defp square_file_index(square), do: Integer.mod(square - 1, 8)
   defp square_rank_index(square), do: Integer.floor_div(square - 1, 8)
 
-  defp update_board(board = %Board{}, move = %Move{chesspiece: chesspiece, from: from, side: color}) do
+  defp update_board(board = %Board{}, move = %Move{}) do
     board
     |> update_fullmove_number(move)
     |> update_active(move)
@@ -127,7 +127,7 @@ defmodule ChessApp.Chess.Board do
     |> do_update_placements(move)
     |> do_update_placements(rook_move_for_castle(move))
   end
-  defp update_placements(board = %Board{}, move = %Move{special: :enpassant, from: from, to: to}) do
+  defp update_placements(board = %Board{}, move = %Move{special: :enpassant}) do
     board
     |> do_update_placements(move)
     |> do_captured_piece_at(enpassant_captured_pawn_square(move))

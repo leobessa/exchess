@@ -40,10 +40,10 @@ defmodule ChessApp.Chess.Board.FenExporter do
   defp placements(placements) do
     placements
     |> Enum.chunk(8)
-    |> Enum.map_join("/", &fen_line(&1))
+    |> Enum.map_join("/", &rank_line(&1))
   end
 
-  defp fen_line(placements) do
+  defp rank_line(placements) do
     placements
     |> Enum.map_join("", &piece(&1))
     |> compact_emptys

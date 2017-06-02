@@ -3,14 +3,14 @@ defmodule ChessApp.Chess.Match do
   import Ecto.Changeset
   alias ChessApp.Account.Credential
 
-  @initial_game_state "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+  @initial_fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "matches" do
     belongs_to :player1, Credential
     belongs_to :player2, Credential
-    field :game_state, :string, default: @initial_game_state
+    field :fen, :string, default: @initial_fen
     field :finished, :boolean, default: false
 
     timestamps()
@@ -28,10 +28,10 @@ defmodule ChessApp.Chess.Match do
     |> put_change(:player2_id, player2_id)
   end
 
-  def set_game_state_changeset(model, game_state) do
+  def set_fen_changeset(model, fen) do
     model
     |> change()
-    |> put_change(:game_state, game_state)
+    |> put_change(:fen, fen)
   end
 
 end
