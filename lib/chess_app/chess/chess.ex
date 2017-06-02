@@ -25,7 +25,15 @@ defmodule ChessApp.Chess do
 
   """
   def list_matches do
-    Repo.all(Match)
+    Match
+    |> order_by(desc: :inserted_at)
+    |> Repo.all
+  end
+  def list_matches(preload: preload) do
+    Match
+    |> order_by(desc: :inserted_at)
+    |> Repo.all()
+    |> Repo.preload(preload)
   end
 
   def all_matches_index_page(params) do

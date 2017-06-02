@@ -1,0 +1,15 @@
+<%= link("Home", to: home_path(@conn, :index), class: "btn btn-xs") %>
+<%= link("Sign in", to: session_path(@conn, :new), class: "btn btn-bg") %>
+<div class="container">
+
+<%= form_tag(signup_path(@conn, :create), method: :post, class: "form-signin", id: "signup_form") %>
+    <h2 class="form-signin-heading">Sign up</h2>
+    <label for="username" class="sr-only">username</label>
+    <input name="username" type="text" id="username" class="form-control" required="" autofocus="">
+    <label for="password" class="sr-only">password</label>
+    <input name="password" type="password" id="password" class="form-control" required="">
+    <div class="checkbox">
+    </div>
+    <button id="login_btn" class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+  </form>
+</div>

@@ -23,7 +23,8 @@ defmodule ChessApp.Web.MatchChannel do
       fen: match.fen,
       player1_id: match.player1_id,
       player2_id: match.player2_id,
-      finished: match.finished
+      finished: match.finished,
+      is_current_player: is_current_player(socket,match)
     }
 
    {:noreply, socket}
@@ -35,27 +36,57 @@ defmodule ChessApp.Web.MatchChannel do
       fen: match.fen,
       player1_id: match.player1_id,
       player2_id: match.player2_id,
-      finished: match.finished
+      finished: match.finished,
+      is_current_player: is_current_player(socket,match)
     }}
     {:reply, reply, socket}
   end
 
   def handle_in("move", %{"an" => move}, socket) do
-    match = %{player1_id: player1_id, player2_id: player2_id} = socket.assigns[:match]
-    credential = current_resource(socket)
-    role = case credential.id do
-      ^player1_id when not is_nil(player1_id) -> :white
-      ^player2_id when not is_nil(player2_id) -> :black
-      _ -> :viewer
-    end
+    match = socket.assigns[:match]
     reply = with {:ok, board}  <- Board.load(match.fen),
-      :ok <- authorize_turn_move(board,role),
+      :ok <- authorize_turn_move(board,role(socket, match)),
       {:ok, result} <- Board.make_move(board, move) do
         {:ok, match} = ChessApp.Chess.update_fen(match, result)
         Logger.debug("match_updated #{inspect(match)}")
         {:ok, %{"an" => move}}
+    else
+      {:error, :invalid_move, description} ->
+        {:ok, %{"errors" => ["invalid_move"], "description" => description}}
+      {:error, %{"errors" => errors}} ->
+        {:ok, %{"errors" => errors}}
     end
     {:reply, reply, socket}
+  end
+
+  defp role(socket, _match = %{player1_id: player1_id, player2_id: player2_id}) do
+    credential = current_resource(socket)
+    case credential.id do
+      ^player1_id when not is_nil(player1_id) -> :white
+      ^player2_id when not is_nil(player2_id) -> :black
+      _ -> :viewer
+    end
+  end
+
+  intercept ["game_state_updated"]
+
+  def handle_out(event_name = "game_state_updated", match = %Match{}, socket) do
+    socket = assign(socket, :match, match)
+    push socket, event_name, %{finished: match.finished, fen: match.fen, is_current_player: is_current_player(socket,match)}
+    {:noreply, socket}
+  end
+
+  # Add authorization logic here as required.
+  defp authorized?(_payload) do
+    true
+  end
+
+  def is_current_player(_socket,_match = %{finished: true}) do
+    false
+  end
+  def is_current_player(socket,match = %{finished: false}) do
+    {:ok, %Board{active: active}} = Board.load(match.fen)
+    active == role(socket, match)
   end
 
   defp authorize_turn_move(%Board{}, :viewer) do
@@ -66,28 +97,4 @@ defmodule ChessApp.Web.MatchChannel do
     {:error, %{"errors" => ["not_#{role}_turn"]}}
   end
 
-  # # Channels can be used in a request/response fashion
-  # # by sending replies to requests from the client
-  # def handle_in("ping", payload, socket) do
-  #   {:reply, {:ok, payload}, socket}
-  # end
-  #
-  # # It is also common to receive messages from the client and
-  # # broadcast to everyone in the current topic (match:lobby).
-  # def handle_in("shout", payload, socket) do
-  #   broadcast socket, "shout", payload
-  #   {:noreply, socket}
-  # end
-  intercept ["game_state_updated"]
-
-  def handle_out(event_name = "game_state_updated", match = %Match{}, socket) do
-    socket = assign(socket, :match, match)
-    push socket, event_name, %{finished: match.finished, fen: match.fen}
-    {:noreply, socket}
-  end
-
-  # Add authorization logic here as required.
-  defp authorized?(_payload) do
-    true
-  end
 end

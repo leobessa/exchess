@@ -11,8 +11,20 @@ config :chess_app, ChessApp.Web.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
-  watchers: []
+  watchers: [
+    node: ["node_modules/.bin/webpack-dev-server", "--inline", "--colors", "--hot", "--stdin", "--host", "localhost", "--port", "8080", "--public", "localhost:8080",
+    cd: Path.expand("../assets", __DIR__)
+  ]]
 
+config :chess_app, ChessApp.Web.Endpoint,
+  live_reload: [
+    patterns: [
+      ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
+      ~r{priv/gettext/.*(po)$},
+      ~r{lib/chess_app/web/views/.*(ex)$},
+      ~r{lib/chess_app/web/templates/.*(eex)$}
+    ]
+  ]
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed

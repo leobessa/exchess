@@ -10,6 +10,19 @@ defmodule ChessApp.Web.Router do
     plug Guardian.Plug.LoadResource
   end
 
+  pipeline :browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
+
+  pipeline :browser_auth do
+    plug Guardian.Plug.VerifySession
+    plug Guardian.Plug.LoadResource
+  end
+
   scope "/api", ChessApp.Web, as: :api do
     pipe_through :api
     post "/accounts", CredentialController, :create, as: :signup
@@ -24,5 +37,16 @@ defmodule ChessApp.Web.Router do
     get "/matches/waiting", MatchController, :waiting_for_opponent_matches_index, as: :waiting_for_opponent_matches
     get "/matches/finished", MatchController, :finished_matches_index, as: :finished_matches
     post "/auth_tokens", AuthTokenController, :create, as: :auth_token
+  end
+
+  scope "/", ChessApp.Web do
+    pipe_through [:browser,:browser_auth]
+    get "/", HomeController, :index
+    get "/login", SessionController, :new
+    post "/sessions", SessionController, :create
+    delete "/sessions", SessionController, :delete
+    get "/signup", SignupController, :new
+    post "/signups", SignupController, :create
+    get "/matches/:id", MatchController, :show, as: :match
   end
 end

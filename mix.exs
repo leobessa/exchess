@@ -31,6 +31,7 @@ defmodule ChessApp.Mixfile do
     [{:phoenix, "~> 1.3.0-rc", override: true},
      {:phoenix_pubsub, "~> 1.0"},
      {:phoenix_ecto, "~> 3.2"},
+     {:phoenix_html, "~> 2.9.3"},
      {:postgrex, ">= 0.0.0"},
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
@@ -38,6 +39,7 @@ defmodule ChessApp.Mixfile do
      {:guardian, "~> 0.14.2"},
      {:scrivener_ecto, "~> 1.0"},
      {:scrivener_headers, "~> 3.1"},
+     {:corsica, "~> 1.0"},
      {:ex_machina, "~> 2.0", only: :test}]
   end
 
