@@ -36,7 +36,6 @@ defmodule ChessApp.Web.Router do
     get "/matches/playing", MatchController, :playing_matches_index, as: :playing_matches
     get "/matches/waiting", MatchController, :waiting_for_opponent_matches_index, as: :waiting_for_opponent_matches
     get "/matches/finished", MatchController, :finished_matches_index, as: :finished_matches
-    post "/auth_tokens", AuthTokenController, :create, as: :auth_token
   end
 
   scope "/", ChessApp.Web do

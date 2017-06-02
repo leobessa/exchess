@@ -11,7 +11,7 @@ defmodule ChessApp.Web.SignupController do
   end
 
   def create(conn, params = %{}) do
-    with {:ok, %Credential{} = credential} <- Account.create_credential(params) do
+    with {:ok, %Credential{}} <- Account.create_credential(params) do
       conn
       |> put_flash(:info, "Sign Up Successful")
       |> redirect(to: home_path(conn, :index))
