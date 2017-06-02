@@ -17,6 +17,9 @@ defmodule ChessApp.Account do
       _ -> {:error, :invalid_credential}
     end
   end
+  def create_auth_token(%Credential{} = credential) do
+    AuthToken.from_credential(credential)
+  end
 
   @doc """
   Returns the list of credentials.

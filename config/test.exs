@@ -7,7 +7,7 @@ config :chess_app, ChessApp.Web.Endpoint,
   server: false
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :info
 
 # Configure your database
 config :chess_app, ChessApp.Repo,

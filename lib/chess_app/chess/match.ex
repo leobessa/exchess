@@ -28,4 +28,10 @@ defmodule ChessApp.Chess.Match do
     |> put_change(:player2_id, player2_id)
   end
 
+  def set_game_state_changeset(model, game_state) do
+    model
+    |> change()
+    |> put_change(:game_state, game_state)
+  end
+
 end

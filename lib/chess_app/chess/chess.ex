@@ -90,4 +90,18 @@ defmodule ChessApp.Chess do
     end
   end
 
+  def update_game_state(match = %Match{},next_state = %ChessApp.Chess.Board{}) do
+    update_game_state(match,ChessApp.Chess.Board.dump!(next_state))
+  end
+  def update_game_state(%Match{id: match_id},next_state) when is_binary(next_state) do
+    Repo.transaction fn ->
+      result = Match
+      |> Repo.get(match_id)
+      |> Match.set_game_state_changeset(next_state)
+      |> Repo.update!
+      ChessApp.Web.Endpoint.broadcast("match:#{match_id}","game_state_updated",result)
+      result
+    end
+  end
+
 end
